@@ -1,5 +1,5 @@
 <resources>
-  <string name="app_name">Remind me there</string>
+  <string name="app_name">Geofence App</string>
   <string name="instruction_where_description">Where do you want to be reminded?</string>
   <string name="instruction_where_subtitle_description">Drag the map to set the location</string>
   <string name="instruction_radius_description">Choose the radius</string>

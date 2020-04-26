@@ -169,6 +169,7 @@ class MainActivity : BaseActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClick
       uiSettings.isMyLocationButtonEnabled = false
       uiSettings.isMapToolbarEnabled = false
       setOnMarkerClickListener(this@MainActivity)
+
     }
 
     onMapAndPermissionReady()

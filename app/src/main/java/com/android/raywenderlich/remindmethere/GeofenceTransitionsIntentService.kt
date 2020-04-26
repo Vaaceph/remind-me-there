@@ -5,6 +5,9 @@ import android.content.Intent
 import android.util.Log
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
+import com.google.firebase.database.FirebaseDatabase
+import java.text.SimpleDateFormat
+import java.util.*
 
 class GeofenceTransitionsIntentService : IntentService("GeoTrIntentService") {
 
@@ -32,6 +35,12 @@ class GeofenceTransitionsIntentService : IntentService("GeoTrIntentService") {
       if (message != null && latLng != null) {
         sendNotification(this, message, latLng)
       }
+
+      val database = FirebaseDatabase.getInstance()
+      val myRef = database.getReference(message.toString())
+      val sdf = SimpleDateFormat("hh:mm:ss dd/M/yyyy")
+      val currentDate = sdf.format(Date())
+      myRef.setValue(currentDate)
     }
   }
 

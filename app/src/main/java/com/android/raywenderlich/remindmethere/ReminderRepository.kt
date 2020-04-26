@@ -39,7 +39,10 @@ import android.support.v4.content.ContextCompat
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.Gson
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ReminderRepository(private val context: Context) {
 
@@ -63,15 +66,21 @@ class ReminderRepository(private val context: Context) {
   fun add(reminder: Reminder,
           success: () -> Unit,
           failure: (error: String) -> Unit) {
+
+    //val database = FirebaseDatabase.getInstance()
+    //val myRef = database.getReference(reminder.message.toString())
+    //val sdf = SimpleDateFormat("hh:mm:ss dd/M/yyyy")
+    //val currentDate = sdf.format(Date())
+    //myRef.setValue(currentDate)
     // 1
-    val geofence = buildGeofence(reminder)
+    val geofence = buildingGeofence(reminder)
     if (geofence != null
         && ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
       // 2
       geofencingClient
-          .addGeofences(buildGeofencingRequest(geofence), geofencePendingIntent)
+          .addGeofences(geofencingRequestBuilder(geofence), geofencePendingIntent)
           .addOnSuccessListener {
             // 3
             saveAll(getAll() + reminder)
@@ -84,31 +93,30 @@ class ReminderRepository(private val context: Context) {
     }
   }
 
-  private fun buildGeofence(reminder: Reminder): Geofence? {
-    val latitude = reminder.latLng?.latitude
-    val longitude = reminder.latLng?.longitude
-    val radius = reminder.radius
+  private fun buildingGeofence(remindering: Reminder): Geofence? {
+    val r = remindering.radius
+    val long = remindering.latLng?.longitude
+    val lat = remindering.latLng?.latitude
 
-    if (latitude != null && longitude != null && radius != null) {
+    if (long != null && lat!= null && r != null) {
       return Geofence.Builder()
-          .setRequestId(reminder.id)
-          .setCircularRegion(
-              latitude,
-              longitude,
-              radius.toFloat()
-          )
-          .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+          .setRequestId(remindering.id)
           .setExpirationDuration(Geofence.NEVER_EXPIRE)
+          .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+          .setCircularRegion(
+              lat,
+              long,
+              r.toFloat())
           .build()
     }
 
     return null
   }
 
-  private fun buildGeofencingRequest(geofence: Geofence): GeofencingRequest {
+  private fun geofencingRequestBuilder(geofence: Geofence): GeofencingRequest {
     return GeofencingRequest.Builder()
-        .setInitialTrigger(0)
         .addGeofences(listOf(geofence))
+        .setInitialTrigger(1)
         .build()
   }
 
